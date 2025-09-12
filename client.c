@@ -14,9 +14,19 @@ static void log_write(const char *fmt, ...);
 
 // Implement logging helpers early so they are visible to all functions
 static void log_init_client() {
-    // Always enable logging
-    LOG_FP = fopen("client_log.txt", "w");
-    if (LOG_FP) LOG_ENABLED = 1;
+    // Enable logging only if RUDP_LOG env var is set (1/true/yes)
+    const char *env = getenv("RUDP_LOG");
+    int enable = 0;
+    if (env) {
+        if (strcmp(env, "1") == 0 || strcmp(env, "yes") == 0 || strcmp(env, "YES") == 0 ||
+            strcmp(env, "True") == 0 || strcmp(env, "TRUE") == 0 || strcmp(env, "true") == 0) {
+                enable = 1;
+        }
+    }
+    if (enable) {
+        LOG_FP = fopen("client_log.txt", "w");
+        if (LOG_FP) LOG_ENABLED = 1;
+    }
 }
 
 static void log_write(const char *fmt, ...) {

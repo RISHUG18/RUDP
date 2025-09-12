@@ -215,9 +215,19 @@ void enqueue_message(message_queue *mq, const char *message) {
 //llm generated code ends//
 
 static void log_init_server() {
-    // Always enable logging
-    LOG_FP = fopen("server_log.txt", "w");
-    if (LOG_FP) LOG_ENABLED = 1;
+    // Enable logging only if RUDP_LOG env var is set (1/true/yes)
+    const char *env = getenv("RUDP_LOG");
+    int enable = 0;
+    if (env) {
+        if (strcmp(env, "1") == 0 || strcmp(env, "yes") == 0 || strcmp(env, "YES") == 0 ||
+            strcmp(env, "True") == 0 || strcmp(env, "TRUE") == 0 || strcmp(env, "true") == 0) {
+            enable = 1;
+        }
+    }
+    if (enable) {
+        LOG_FP = fopen("server_log.txt", "w");
+        if (LOG_FP) LOG_ENABLED = 1;
+    }
 }
 //llm code starts//
 
